@@ -1,0 +1,19 @@
+steps:
+  - name: 'hashicorp/terraform:1.5.7'
+    args: ['init']
+    id: 'init'
+
+  - name: 'hashicorp/terraform:1.5.7'
+    args: ['plan']
+    id: 'plan'
+    waitFor: ['init']
+
+  - name: 'hashicorp/terraform:1.5.7'
+    args: ['apply', '-auto-approve']
+    id: 'apply'
+    waitFor: ['plan']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+timeout: 1200s
