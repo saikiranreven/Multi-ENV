@@ -1,17 +1,17 @@
 steps:
   - name: 'hashicorp/terraform:1.5.7'
     args: ['init']
-    workingDir: 'MULTI-ENV/Development'
+    dir: 'Development'
     
 
   - name: 'hashicorp/terraform:1.5.7'
     args: ['plan']
-    workingDir: 'MULTI-ENV/Development'
+    dir: 'Development'
     waitFor: ['init']
 
   - name: 'hashicorp/terraform:1.5.7'
     args: ['apply', '-auto-approve']
-    workingDir: 'MULTI-ENV/Development'
+    dir: 'Development'
     waitFor: ['plan']
 
 options:
