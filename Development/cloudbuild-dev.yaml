@@ -1,9 +1,20 @@
 steps:
-- name: 'hashicorp/terraform'
-  args: ['init']
-  
-- name: 'hashicorp/terraform'
-  args: ['apply', '-auto-approve']
+  - name: 'hashicorp/terraform:1.5.7'
+    args: ['init']
+    workingDir: 'MULTI-ENV/Development'
+    
+
+  - name: 'hashicorp/terraform:1.5.7'
+    args: ['plan']
+    workingDir: 'MULTI-ENV/Development'
+    waitFor: ['init']
+
+  - name: 'hashicorp/terraform:1.5.7'
+    args: ['apply', '-auto-approve']
+    workingDir: 'MULTI-ENV/Development'
+    waitFor: ['plan']
 
 options:
   logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+timeout: 1200s
