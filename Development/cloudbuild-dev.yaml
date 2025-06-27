@@ -1,0 +1,11 @@
+steps:
+# Your existing Terraform steps
+- name: 'hashicorp/terraform'
+  args: ['init']
+  
+- name: 'hashicorp/terraform'
+  args: ['apply', '-auto-approve']
+
+# Optional add-on for app deployment
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/dev-app', '../../app']
