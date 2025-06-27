@@ -1,4 +1,4 @@
-resource "google_container_cluster" "cluster" {
+resource "google_container_cluster" "dev" {
   name     = "dev-cluster"
   location = "us-central1"
   
@@ -16,15 +16,33 @@ resource "google_container_cluster" "cluster" {
 resource "kubernetes_deployment" "app" {
   metadata {
     name = "hello-app"
+    labels = {
+      app = "hello"
+    }
   }
+
   spec {
     replicas = 1
+    selector {
+      match_labels = {
+        app = "hello"
+      }
+    }
+
     template {
-      container {
-        image = "nginx:alpine"
-        name  = "web"
-        port {
-          container_port = 80
+      metadata {
+        labels = {
+          app = "hello"
+        }
+      }
+
+      spec {
+        container {
+          name  = "nginx"
+          image = "nginx:alpine"
+          port {
+            container_port = 80
+          }
         }
       }
     }
@@ -33,12 +51,12 @@ resource "kubernetes_deployment" "app" {
 
 resource "kubernetes_service" "app" {
   metadata {
-    name = "web-service"
+    name = "hello-service"
   }
   spec {
     type = "LoadBalancer"
     selector = {
-      app = kubernetes_deployment.app.metadata[0].labels.app
+      app = "hello"
     }
     port {
       port        = 80
