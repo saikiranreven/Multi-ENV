@@ -1,18 +1,11 @@
 steps:
-  - name: 'hashicorp/terraform:1.5.7'
-    args: ['init']
-    dir: 'Development'
-    
+- name: 'hashicorp/terraform'
+  args: ['init']
+  dir: 'Development'  # Points to your exact folder
 
-  - name: 'hashicorp/terraform:1.5.7'
-    args: ['plan']
-    dir: 'Development'
-    waitFor: ['init']
-
-  - name: 'hashicorp/terraform:1.5.7'
-    args: ['apply', '-auto-approve']
-    dir: 'Development'
-    waitFor: ['plan']
+- name: 'hashicorp/terraform'
+  args: ['apply', '-auto-approve']
+  dir: 'Development'  # Points to your exact folder
 
 options:
   logging: CLOUD_LOGGING_ONLY
