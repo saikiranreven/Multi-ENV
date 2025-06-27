@@ -1,4 +1,4 @@
-resource "google_storage_bucket" "storageBucket" {
+resource "google_storage_bucket" "project_bucket" {
   name          = "project_bucket_${random_id.suffix.hex}"
   location      = "us-central1"
 }
