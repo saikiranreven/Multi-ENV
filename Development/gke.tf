@@ -1,8 +1,3 @@
-resource "google_container_cluster" "dev" {
-  name     = "dev-cluster"  # Must match everywhere
-  location = "us-central1"
-}
-
 resource "kubernetes_deployment" "app" {
   metadata {
     name = "hello-app"
@@ -18,12 +13,14 @@ resource "kubernetes_deployment" "app" {
         app = "hello"
       }
     }
+
     template {
       metadata {
         labels = {
           app = "hello"
         }
       }
+
       spec {
         container {
           name  = "web"
@@ -31,9 +28,27 @@ resource "kubernetes_deployment" "app" {
           port {
             container_port = 80
           }
+          
+          # Add health checks
+          readiness_probe {
+            http_get {
+              path = "/"
+              port = 80
+            }
+            initial_delay_seconds = 5
+            period_seconds       = 10
+          }
         }
       }
     }
+    
+    # Add deployment timeout
+    min_ready_seconds = 30
+  }
+
+  timeouts {
+    create = "10m"
+    update = "10m"
   }
 }
 
@@ -50,5 +65,10 @@ resource "kubernetes_service" "app" {
       port        = 80
       target_port = 80
     }
+  }
+  
+  timeouts {
+    create = "5m"
+    update = "5m"
   }
 }
