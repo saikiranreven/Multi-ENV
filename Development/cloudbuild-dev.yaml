@@ -9,6 +9,8 @@ steps:
 - name: 'hashicorp/terraform'
   args: ['apply', '-auto-approve']
   dir: '/workspace/Development'
+  env:
+  - 'TF_VAR_project_id=$PROJECT_ID'
 
 options:
   logging: CLOUD_LOGGING_ONLY

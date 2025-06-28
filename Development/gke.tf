@@ -1,13 +1,6 @@
 resource "google_container_cluster" "dev" {
-  name     = "dev-cluster"
+  name     = "dev-cluster"  # Must match everywhere
   location = "us-central1"
-  
-  node_pool {
-    node_config {
-      machine_type = "e2-small"
-      oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-    }
-  }
 }
 
 resource "kubernetes_deployment" "app" {

@@ -6,22 +6,14 @@ terraform {
 }
 
 provider "google" {
-  project = "project-bct-463501"
+  project = var.project_id
   region  = "us-central1"
 }
 
-# Retrieve an access token as the Terraform runner
-data "google_client_config" "provider" {}
-
-data "google_container_cluster" "my_cluster" {
-  name     = "my-cluster"
-  location = "us-central1"
-}
-
 provider "kubernetes" {
-  host  = "https://${data.google_container_cluster.my_cluster.endpoint}"
-  token = data.google_client_config.provider.access_token
-  cluster_ca_certificate = base64decode(
-    data.google_container_cluster.my_cluster.master_auth[0].cluster_ca_certificate,
-  )
+  host                   = "https://${google_container_cluster.dev.endpoint}"
+  cluster_ca_certificate = base64decode(google_container_cluster.dev.master_auth[0].cluster_ca_certificate)
+  token                  = data.google_client_config.default.access_token
 }
+
+data "google_client_config" "default" {}
