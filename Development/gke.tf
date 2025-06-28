@@ -1,43 +1,30 @@
+resource "google_container_cluster" "dev" {
+  name     = "dev-cluster"
+  location = "us-central1"
+  
+  node_pool {
+    node_config {
+      machine_type = "e2-small"
+      oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+    }
+  }
+}
+
 resource "kubernetes_deployment" "app" {
   metadata {
     name = "hello-app"
-    labels = {
-      app = "hello"
-    }
   }
-
   spec {
-    replicas = 1
-    selector {
-      match_labels = {
-        app = "hello"
-      }
-    }
-
     template {
-      metadata {
-        labels = {
-          app = "hello"
-        }
-      }
-
-      spec {
-        container {
-          name  = "nginx"
-          image = "nginx:alpine"
-          port {
-            container_port = 80
-          }
+      container {
+        image = "gcr.io/${var.project_id}/hello-app:latest"
+        name  = "web"
+        port {
+          container_port = 80
         }
       }
     }
   }
-
-  # Wait for cluster to be fully ready
-  depends_on = [
-    google_container_cluster.dev,
-    kubernetes_config_map.app_config
-  ]
 }
 
 resource "kubernetes_service" "app" {
@@ -46,25 +33,12 @@ resource "kubernetes_service" "app" {
   }
   spec {
     type = "LoadBalancer"
-    selector = {
-      app = "hello"
-    }
     port {
       port        = 80
       target_port = 80
     }
-  }
-
-  # Wait for deployment to be ready
-  depends_on = [kubernetes_deployment.app]
-}
-
-# Add this config map to ensure proper initialization
-resource "kubernetes_config_map" "app_config" {
-  metadata {
-    name = "app-config"
-  }
-  data = {
-    "initialized" = "true"
+    selector = {
+      app = kubernetes_deployment.app.metadata[0].labels.app
+    }
   }
 }

@@ -1,13 +1,14 @@
 steps:
+# 1. Build container
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/hello-app:latest', './app']
+
+# 2. Deploy infrastructure
 - name: 'hashicorp/terraform'
   args: ['init']
-  dir: 'Development'  # Points to your exact folder
-
+  
 - name: 'hashicorp/terraform'
   args: ['apply', '-auto-approve']
-  dir: 'Development'  # Points to your exact folder
 
 options:
   logging: CLOUD_LOGGING_ONLY
-  machineType: 'E2_HIGHCPU_8'
-timeout: 1200s
