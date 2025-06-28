@@ -1,18 +1,3 @@
-resource "google_container_cluster" "dev" {
-  name     = "dev-cluster"
-  location = "us-central1"
-  
-  node_pool {
-    node_config {
-      machine_type = "e2-small"
-      oauth_scopes = [
-        "https://www.googleapis.com/auth/logging.write",
-        "https://www.googleapis.com/auth/monitoring"
-      ]
-    }
-  }
-}
-
 resource "kubernetes_deployment" "app" {
   metadata {
     name = "hello-app"
@@ -47,6 +32,12 @@ resource "kubernetes_deployment" "app" {
       }
     }
   }
+
+  # Wait for cluster to be fully ready
+  depends_on = [
+    google_container_cluster.dev,
+    kubernetes_config_map.app_config
+  ]
 }
 
 resource "kubernetes_service" "app" {
@@ -62,5 +53,18 @@ resource "kubernetes_service" "app" {
       port        = 80
       target_port = 80
     }
+  }
+
+  # Wait for deployment to be ready
+  depends_on = [kubernetes_deployment.app]
+}
+
+# Add this config map to ensure proper initialization
+resource "kubernetes_config_map" "app_config" {
+  metadata {
+    name = "app-config"
+  }
+  data = {
+    "initialized" = "true"
   }
 }
