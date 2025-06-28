@@ -1,7 +1,7 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/$PROJECT_ID/hello-app:latest', '/workspace/app']
-  timeout: 600s
+  timeout: 600s  # Correct format for step timeout
 
 - name: 'hashicorp/terraform'
   args: ['init']
@@ -11,10 +11,10 @@ steps:
 - name: 'hashicorp/terraform'
   args: ['apply', '-auto-approve']
   dir: '/workspace/Development'
-  timeout: 1200s  # 20 minute timeout
+  timeout: 1200s
   env:
   - 'TF_VAR_project_id=$PROJECT_ID'
 
 options:
   logging: CLOUD_LOGGING_ONLY
-  timeout: 1800s  # Overall 30 minute timeout
+timeout: 1800s  # Moved to root level for build-wide timeout
