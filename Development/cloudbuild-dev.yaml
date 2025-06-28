@@ -1,9 +1,7 @@
 steps:
-# 1. Build container (using absolute path)
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'gcr.io/$PROJECT_ID/hello-app:latest', '/workspace/app']
 
-# 2. Terraform steps
 - name: 'hashicorp/terraform'
   args: ['init']
   dir: '/workspace/Development'

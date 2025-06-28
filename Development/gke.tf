@@ -25,28 +25,12 @@ resource "kubernetes_deployment" "app" {
       spec {
         container {
           name  = "web"
-          image = "gcr.io/${var.project_id}/hello-app:latest"
+          image = "nginx:alpine"  # Using static image for now
           port {
             container_port = 80
           }
         }
       }
-    }
-  }
-}
-
-resource "kubernetes_service" "app" {
-  metadata {
-    name = "hello-service"
-  }
-  spec {
-    type = "LoadBalancer"
-    selector = {
-      app = "hello"
-    }
-    port {
-      port        = 80
-      target_port = 80
     }
   }
 }
