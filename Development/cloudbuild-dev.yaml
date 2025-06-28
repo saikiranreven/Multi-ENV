@@ -1,18 +1,17 @@
 steps:
-# 1. Build container (from app directory)
+# 1. Build container (note the path)
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/$PROJECT_ID/hello-app:latest', '../../app']
-  dir: 'Development'
-
-# 2. Initialize Terraform
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/hello-app:latest', '${_APP_PATH}']
+  
+# 2. Terraform steps
 - name: 'hashicorp/terraform'
   args: ['init']
-  dir: 'Development'
-
-# 3. Apply changes
+  
 - name: 'hashicorp/terraform'
   args: ['apply', '-auto-approve']
-  dir: 'Development'
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _APP_PATH: ../app  # Critical change
