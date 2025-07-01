@@ -1,10 +1,10 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/welcome-app:latest', './app']
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/welcome-app:latest', 'app']
   
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/welcome-app:latest']
-  
+
   - name: 'hashicorp/terraform:1.5.7'
     args: ['init']
     dir: 'Development'
