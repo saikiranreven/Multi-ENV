@@ -1,20 +1,33 @@
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/$PROJECT_ID/hello-app:latest', '/workspace/app']
-  timeout: 600s  # Correct format for step timeout
+  # Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/welcome-app:latest', '.']
+  
+  # Push the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/welcome-app:latest']
+  
+  # Terraform init
+  - name: 'hashicorp/terraform:1.5.7'
+    args: ['init']
+    id: 'init'
 
-- name: 'hashicorp/terraform'
-  args: ['init']
-  dir: '/workspace/Development'
-  timeout: 300s
+  # Terraform plan
+  - name: 'hashicorp/terraform:1.5.7'
+    args: ['plan']
+    id: 'plan'
+    waitFor: ['init']
 
-- name: 'hashicorp/terraform'
-  args: ['apply', '-auto-approve']
-  dir: '/workspace/Development'
-  timeout: 1200s
-  env:
-  - 'TF_VAR_project_id=$PROJECT_ID'
+  # Terraform apply
+  - name: 'hashicorp/terraform:1.5.7'
+    args: ['apply', '-auto-approve']
+    id: 'apply'
+    waitFor: ['plan']
 
 options:
   logging: CLOUD_LOGGING_ONLY
-timeout: 1800s  # Moved to root level for build-wide timeout
+  machineType: 'E2_HIGHCPU_8'
+timeout: 1200s
+
+substitutions:
+  _TERRAFORM_VERSION: "1.5.7"
